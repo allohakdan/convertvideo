@@ -1,0 +1,16 @@
+Converts videos on OSX using HandBreakCLI in parallel, optimizing for the number of cores
+
+ INSTALLING:
+ 1) Download HandBreak and HandBreakCLI - BOTH
+ 2) Rename covertvideo.py to convertvideo.command
+ 3) Use your favorite text editor to change the parameters NUM_IDLE_CORES and VIDEO_EXT
+
+ USAGE:
+ 1) Place all the videos you wish to convert into a single directory
+ 2) Drop convertvideo.command into the directory containing the videos 
+ 3) Double click convertvideo.command to execute
+
+ TODO:
+ Could be easily be converted to work on linux (just change the get_num_cores command)
+
+
