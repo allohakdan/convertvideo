@@ -113,7 +113,7 @@ class Spinner():
 
 if __name__ == "__main__":
     cores = get_num_cores() - NUM_IDLE_CORES
-    location = os.path.dirname(os.path.abspath(__file__))
+    location = "." #os.path.dirname(os.path.abspath(__file__))
     print "Coverting video in %s"%location
     print "Using %d cores"%cores
     
