@@ -54,6 +54,10 @@ import os
 import time
 import sys
 
+VIDEO_EXT = os.getenv("VIDEO_EXT")
+if not VIDEO_EXT:
+    VIDEO_EXT = "MTS"
+
 def get_num_cores():
     if sys.platform == "linux" or sys.platform == "linux2":
         # LINUX
