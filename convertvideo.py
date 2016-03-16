@@ -19,7 +19,7 @@
 #
 
 NUM_IDLE_CORES = 1
-handbrake_params = "--preset=\"Normal\""
+handbrake_params = "--preset=Normal"
 
 # Copyright (c) 2013, Dan Brooks
 # All rights reserved.
@@ -61,12 +61,12 @@ if not VIDEO_EXT:
 def get_num_cores():
     if sys.platform == "linux" or sys.platform == "linux2":
         # LINUX
-        output, err = call("nproc")
+        output, err = call(["nproc"])
         if len(output) > 0 and len(output[0]) > 0:
             return int(output[0][0])
     else:
         # DARWIN
-        output, err = call("sysctl -a")
+        output, err = call("sysctl -a".split())
         for l in output:
             if "machdep.cpu.core_count:" in l:
                 return int(l[1])
@@ -78,7 +78,7 @@ class ProcessThread(threading.Thread):
         print "Starting Thread for %s"%self.path
         mtime = os.stat(self.path).st_mtime
         ofile = "%s.mp4" % self.path
-        output, err = call('HandBrakeCLI -i "%s" -o "%s" %s'%(self.path,ofile,handbrake_params))
+        output, err = call(['HandBrakeCLI', '-i', self.path, '-o', ofile, handbrake_params])
         if os.path.exists(ofile):
             os.utime(ofile,(mtime,mtime))
         else:
@@ -89,7 +89,7 @@ class ProcessThread(threading.Thread):
 
 
 def call(cmd):
-    p = subprocess.Popen(cmd.split(),stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    p = subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     out, err = p.communicate()
     lines = out.split("\n")
     linesplits = list()
