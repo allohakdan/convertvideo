@@ -19,7 +19,7 @@
 #
 
 NUM_IDLE_CORES = 1
-VIDEO_EXT = "MTS"
+handbrake_params = "--preset=\"Normal\""
 
 # Copyright (c) 2013, Dan Brooks
 # All rights reserved.
@@ -72,7 +72,7 @@ class ProcessThread(threading.Thread):
         self.path = path
     def run(self):
         print "Starting Thread for %s"%self.path
-        output, _ = call('HandBrakeCLI -i "%s" -o "%s.mp4" --preset=\'Normal\''%(self.path,self.path))
+        output, _ = call('HandBrakeCLI -i "%s" -o "%s" %s'%(self.path,ofile,handbrake_params))
         print "Thread finished for %s"%self.path
 
 
