@@ -79,7 +79,6 @@ class ProcessThread(threading.Thread):
         mtime = os.stat(self.path).st_mtime
         ofile = "%s.mp4" % self.path
         output, err = call('HandBrakeCLI -i "%s" -o "%s" %s'%(self.path,ofile,handbrake_params))
-        print output
         if os.path.exists(ofile):
             os.utime(ofile,(mtime,mtime))
         else:
