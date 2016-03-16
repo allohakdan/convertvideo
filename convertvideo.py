@@ -55,17 +55,24 @@ import time
 import sys
 
 def get_num_cores():
-    output = call("sysctl -a")
-    for l in output:
-        if "machdep.cpu.core_count:" in l:
-            return int(l[1])
+    if sys.platform == "linux" or sys.platform == "linux2":
+        # LINUX
+        output, err = call("nproc")
+        if len(output) > 0 and len(output[0]) > 0:
+            return int(output[0][0])
+    else:
+        # DARWIN
+        output, err = call("sysctl -a")
+        for l in output:
+            if "machdep.cpu.core_count:" in l:
+                return int(l[1])
 
 class ProcessThread(threading.Thread):
     def set_target(self,path):
         self.path = path
     def run(self):
         print "Starting Thread for %s"%self.path
-        output = call('HandBrakeCLI -i "%s" -o "%s.mp4" --preset=\'Normal\''%(self.path,self.path))
+        output, _ = call('HandBrakeCLI -i "%s" -o "%s.mp4" --preset=\'Normal\''%(self.path,self.path))
         print "Thread finished for %s"%self.path
 
 
@@ -76,7 +83,7 @@ def call(cmd):
     linesplits = list()
     for l in lines:
         linesplits.append(l.split())
-    return linesplits
+    return linesplits, err
 
 class Spinner():
     def __init__(self):
@@ -132,6 +139,4 @@ if __name__ == "__main__":
         while t.is_alive():
             time.sleep(1)
             spinner.spin()
-    print "FINISHED!" 
-
-        
+    print "FINISHED!"
