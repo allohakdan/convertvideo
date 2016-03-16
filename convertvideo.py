@@ -19,7 +19,7 @@
 #
 
 NUM_IDLE_CORES = 1
-VIDEO_EXT = "MTS"
+handbrake_params = "--preset=\"Normal\""
 
 # Copyright (c) 2013, Dan Brooks
 # All rights reserved.
@@ -54,18 +54,37 @@ import os
 import time
 import sys
 
+VIDEO_EXT = os.getenv("VIDEO_EXT")
+if not VIDEO_EXT:
+    VIDEO_EXT = "MTS"
+
 def get_num_cores():
-    output = call("sysctl -a")
-    for l in output:
-        if "machdep.cpu.core_count:" in l:
-            return int(l[1])
+    if sys.platform == "linux" or sys.platform == "linux2":
+        # LINUX
+        output, err = call("nproc")
+        if len(output) > 0 and len(output[0]) > 0:
+            return int(output[0][0])
+    else:
+        # DARWIN
+        output, err = call("sysctl -a")
+        for l in output:
+            if "machdep.cpu.core_count:" in l:
+                return int(l[1])
 
 class ProcessThread(threading.Thread):
     def set_target(self,path):
         self.path = path
     def run(self):
         print "Starting Thread for %s"%self.path
-        output = call('HandBrakeCLI -i "%s" -o "%s.mp4" --preset=\'Normal\''%(self.path,self.path))
+        mtime = os.stat(self.path).st_mtime
+        ofile = "%s.mp4" % self.path
+        output, err = call('HandBrakeCLI -i "%s" -o "%s" %s'%(self.path,ofile,handbrake_params))
+        if os.path.exists(ofile):
+            os.utime(ofile,(mtime,mtime))
+        else:
+            print "Output file (%s) does not exist!" % ofile
+            if err:
+                print err
         print "Thread finished for %s"%self.path
 
 
@@ -76,7 +95,7 @@ def call(cmd):
     linesplits = list()
     for l in lines:
         linesplits.append(l.split())
-    return linesplits
+    return linesplits, err
 
 class Spinner():
     def __init__(self):
@@ -93,7 +112,7 @@ class Spinner():
 
 if __name__ == "__main__":
     cores = get_num_cores() - NUM_IDLE_CORES
-    location = os.path.dirname(os.path.abspath(__file__))
+    location = "." #os.path.dirname(os.path.abspath(__file__))
     print "Coverting video in %s"%location
     print "Using %d cores"%cores
     
@@ -132,6 +151,4 @@ if __name__ == "__main__":
         while t.is_alive():
             time.sleep(1)
             spinner.spin()
-    print "FINISHED!" 
-
-        
+    print "FINISHED!"
