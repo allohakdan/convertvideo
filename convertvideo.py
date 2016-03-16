@@ -76,7 +76,16 @@ class ProcessThread(threading.Thread):
         self.path = path
     def run(self):
         print "Starting Thread for %s"%self.path
-        output, _ = call('HandBrakeCLI -i "%s" -o "%s" %s'%(self.path,ofile,handbrake_params))
+        mtime = os.stat(self.path).st_mtime
+        ofile = "%s.mp4" % self.path
+        output, err = call('HandBrakeCLI -i "%s" -o "%s" %s'%(self.path,ofile,handbrake_params))
+        print output
+        if os.path.exists(ofile):
+            os.utime(ofile,(mtime,mtime))
+        else:
+            print "Output file (%s) does not exist!" % ofile
+            if err:
+                print err
         print "Thread finished for %s"%self.path
 
 
