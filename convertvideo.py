@@ -65,7 +65,7 @@ class ProcessThread(threading.Thread):
         self.path = path
     def run(self):
         print "Starting Thread for %s"%self.path
-        output = call("HandBrakeCLI -i %s -o %s.mp4 --preset='Normal'"%(self.path,self.path))
+        output = call('HandBrakeCLI -i "%s" -o "%s.mp4" --preset=\'Normal\''%(self.path,self.path))
         print "Thread finished for %s"%self.path
 
 
